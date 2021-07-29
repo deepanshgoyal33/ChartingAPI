@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.stockmarketapi.entity.Users;
 import com.example.stockmarketapi.repository.UsersRepository;
+import com.example.stockmarketapi.service.UserService;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -31,6 +32,9 @@ public class UserController {
 
 	@Autowired
 	private UsersRepository usersRepository;
+	
+	@Autowired
+	private UserService userService;
 	
 
 	@RequestMapping(value = "/setuserapi", method = RequestMethod.POST)
@@ -91,9 +95,26 @@ public class UserController {
 		Users usr = new Users();
 		usr = usersRepository.getById(userid);
 		usr.setConfirmed(true);
+		
 		usersRepository.save(usr);
 		return "User confirmed" + usr.getName();
 	}
+	
+	
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public ResponseEntity<Void> loginUser(@RequestBody Users user) throws AddressException, MessagingException {
+		
+		if(userService.checkUser(user))
+		{
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		else
+		{
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+        
+	}
+	
 	
 
 
